@@ -1,45 +1,79 @@
+using App2.Data;
+using Microsoft.EntityFrameworkCore;
+using Shared.Dtos;
+using Shared.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.AddNpgsqlDbContext<App2DbContext>("app2db");
 builder.Services.AddOpenApi();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 
 var app = builder.Build();
 
+app.UseCors();
+app.MapOpenApi();
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+var api = app.MapGroup("/api/orders");
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+api.MapGet("/", async (App2DbContext db) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var orders = await db.Orders.AsNoTracking().ToListAsync();
+    return orders.Select(o => new OrderResponse(o.Id, o.CustomerName, o.CustomerEmail, o.ProductId, o.Quantity, o.TotalPrice, o.OrderDate, o.Status));
+});
 
-app.MapGet("/weatherforecast", () =>
+api.MapGet("/{id:int}", async (int id, App2DbContext db) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    var o = await db.Orders.FindAsync(id);
+    return o is null
+        ? Results.NotFound()
+        : Results.Ok(new OrderResponse(o.Id, o.CustomerName, o.CustomerEmail, o.ProductId, o.Quantity, o.TotalPrice, o.OrderDate, o.Status));
+});
+
+api.MapPost("/", async (CreateOrderRequest request, App2DbContext db) =>
+{
+    var order = new Order
+    {
+        CustomerName = request.CustomerName,
+        CustomerEmail = request.CustomerEmail,
+        ProductId = request.ProductId,
+        Quantity = request.Quantity,
+        TotalPrice = request.Quantity * request.UnitPrice
+    };
+    db.Orders.Add(order);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/orders/{order.Id}",
+        new OrderResponse(order.Id, order.CustomerName, order.CustomerEmail, order.ProductId, order.Quantity, order.TotalPrice, order.OrderDate, order.Status));
+});
+
+api.MapPut("/{id:int}", async (int id, CreateOrderRequest request, App2DbContext db) =>
+{
+    var order = await db.Orders.FindAsync(id);
+    if (order is null) return Results.NotFound();
+
+    order.CustomerName = request.CustomerName;
+    order.CustomerEmail = request.CustomerEmail;
+    order.ProductId = request.ProductId;
+    order.Quantity = request.Quantity;
+    order.TotalPrice = request.Quantity * request.UnitPrice;
+    await db.SaveChangesAsync();
+    return Results.Ok(new OrderResponse(order.Id, order.CustomerName, order.CustomerEmail, order.ProductId, order.Quantity, order.TotalPrice, order.OrderDate, order.Status));
+});
+
+api.MapDelete("/{id:int}", async (int id, App2DbContext db) =>
+{
+    var order = await db.Orders.FindAsync(id);
+    if (order is null) return Results.NotFound();
+
+    db.Orders.Remove(order);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

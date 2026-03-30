@@ -13,4 +13,9 @@ builder.Services
     .AddApplicationInsightsTelemetryWorkerService()
     .ConfigureFunctionsApplicationInsights();
 
+builder.Services.AddHttpClient("app1", client =>
+{
+    client.BaseAddress = new Uri("https+http://app1");
+});
+
 builder.Build().Run();

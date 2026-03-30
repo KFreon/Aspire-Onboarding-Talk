@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
@@ -15,7 +13,13 @@ public class MyTimerFunction
     }
 
     [Function("MyTimerFunction")]
-    public IActionResult Run([TimerTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req)
+    public void Run([TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo)
     {
+        _logger.LogInformation("Timer function executed at: {Time}", DateTime.UtcNow);
+
+        if (timerInfo.ScheduleStatus is not null)
+        {
+            _logger.LogInformation("Next timer schedule at: {Next}", timerInfo.ScheduleStatus.Next);
+        }
     }
 }
