@@ -1,5 +1,6 @@
 using App2.Data;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 using Shared.Dtos;
 using Shared.Entities;
 
@@ -19,6 +20,8 @@ var app = builder.Build();
 app.UseCors();
 app.MapOpenApi();
 app.MapDefaultEndpoints();
+
+app.MapStaticAssets();
 
 var api = app.MapGroup("/api/orders");
 
@@ -75,5 +78,7 @@ api.MapDelete("/{id:int}", async (int id, App2DbContext db) =>
     await db.SaveChangesAsync();
     return Results.NoContent();
 });
+
+app.MapOurFallback();
 
 app.Run();

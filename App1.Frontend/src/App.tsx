@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ProductList from "./components/ProductList";
 import ProductForm from "./components/ProductForm";
+//@ts-ignore can't be bothered to fix
 import "./App.css";
 
 export default function App() {

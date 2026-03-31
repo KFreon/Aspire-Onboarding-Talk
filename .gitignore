@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+App1/wwwroot
+App2/wwwroot
+**/tsconfig.tsbuildinfo

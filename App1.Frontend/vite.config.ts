@@ -16,4 +16,8 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    outDir: '../App1/wwwroot',
+    emptyOutDir: true
+  }
 });
