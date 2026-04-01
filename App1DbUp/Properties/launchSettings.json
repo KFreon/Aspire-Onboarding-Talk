@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "App1DbUp": {
+      "commandName": "Project",
+      "commandLineArgs": "--dropdb"
+    }
+  }
+}

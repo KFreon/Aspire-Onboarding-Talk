@@ -77,9 +77,12 @@ public static class BuilderExtensions
 
     public static IResourceBuilder<ProjectResource> WithDbUp<X>(this IResourceBuilder<ProjectResource> builder) where X : IProjectMetadata, new()
     {
+        var sql = builder.GetResouceBuilder(builder.Resource.Name + "db");
+
         var name = builder.Resource.Name + "dbup";
         builder.ApplicationBuilder.AddProject<X>(name)
             .WithSeq()
+            .WithReference(sql)
             .WithParentRelationship(builder)
             .WithExplicitStart();
 
@@ -88,9 +91,11 @@ public static class BuilderExtensions
 
     public static IResourceBuilder<ProjectResource> WithSeed<X>(this IResourceBuilder<ProjectResource> builder) where X : IProjectMetadata, new()
     {
+        var sql = builder.GetResouceBuilder(builder.Resource.Name + "db");
         var name = builder.Resource.Name + "seed";
         builder.ApplicationBuilder.AddProject<X>(name)
             .WithSeq()
+            .WithReference(sql)
             .WithParentRelationship(builder)
             .WithExplicitStart();
 

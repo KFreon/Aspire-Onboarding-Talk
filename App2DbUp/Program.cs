@@ -4,10 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
+var dropDb = args.Length > 0 && args[0] == "--dropdb";
 builder.AddServiceDefaults();
 
 var connectionString = builder.Configuration.GetConnectionString("app2db")
     ?? throw new InvalidOperationException("Connection string 'app2db' not found.");
+
+if (dropDb) DropDatabase.For.PostgresqlDatabase(connectionString);
 
 EnsureDatabase.For.PostgresqlDatabase(connectionString);
 
