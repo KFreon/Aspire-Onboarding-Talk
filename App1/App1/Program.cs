@@ -7,6 +7,9 @@ using Shared.Entities;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+// This is from Aspire, and I'm not 100% sure I like it being in deployed code.
+// It seems to be what they're pushing though.
 builder.AddSqlServerDbContext<App1DbContext>("app1db");
 builder.Services.AddOpenApi();
 builder.Services.AddCors(options =>

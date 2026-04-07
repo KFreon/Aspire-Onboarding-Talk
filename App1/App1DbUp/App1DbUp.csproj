@@ -13,11 +13,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AspireProj.ServiceDefaults\AspireProj.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\AspireProj.ServiceDefaults\AspireProj.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Scripts\**\*.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
