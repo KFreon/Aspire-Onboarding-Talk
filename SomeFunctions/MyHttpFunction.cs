@@ -18,7 +18,7 @@ public class MyHttpFunction
         _httpClientFactory = httpClientFactory;
     }
 
-    [Function("GetProductsSummary")]
+    [Function(MyFunctionNames.GetProductsSummary)]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
         _logger.LogInformation("Fetching products summary from App1...");

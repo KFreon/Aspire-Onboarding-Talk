@@ -1,5 +1,7 @@
 using AspireProj.AppHost;
 using Microsoft.Extensions.DependencyInjection;
+using Projects;
+using Shared;
 #pragma warning disable ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -72,7 +74,7 @@ builder.AddJavaScriptApp("app2-frontend", "../App2/App2.Frontend", "watch")
 
 // Create function list so we can show them in the modal UI
 List<InteractionInput> enabledFunctions = new();
-var functionOptions = new string[] { "MyTimerFunction", "GetProductsSummary" } // TODO: Centralise these into variables or extract directly from Azure Func 
+var functionOptions = new string[] { MyFunctionNames.MyTimerFunction, MyFunctionNames.GetProductsSummary }
     .Select(x => new InteractionInput { InputType = InputType.Boolean, Name = x, Value = x })
     .ToArray();
 

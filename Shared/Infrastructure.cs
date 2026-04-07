@@ -8,6 +8,10 @@ namespace Shared;
 
 public static class InfrastructureExtensions
 {
+    /// <summary>
+    /// Serve the frontend when we need to.
+    /// Also do some variable replacement. PerFOrManCe...
+    /// </summary>
     public static void MapOurFallback(this WebApplication app)
     {
         app.MapFallback(async context =>
@@ -29,7 +33,7 @@ public static class InfrastructureExtensions
                 }
                 catch (FileNotFoundException)
                 {
-                    // Likely just waiting for UI to finish building
+                    // Wait around for UI to finish building
                     await Task.Delay(500);
                 } 
             }

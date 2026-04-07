@@ -25,6 +25,7 @@
     <ProjectReference Include="..\App2\App2DbUp\App2DbUp.csproj" />
     <ProjectReference Include="..\App2\App2Seed\App2Seed.csproj" />
     <ProjectReference Include="..\App2\App2\App2.Web.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\SomeFunctions\SomeFunctions.csproj" />
   </ItemGroup>
 

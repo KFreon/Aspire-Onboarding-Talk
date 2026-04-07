@@ -12,7 +12,7 @@ public class MyTimerFunction
         _logger = logger;
     }
 
-    [Function("MyTimerFunction")]
+    [Function(MyFunctionNames.MyTimerFunction)]
     public void Run([TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo)
     {
         _logger.LogInformation("Timer function executed at: {Time}", DateTime.UtcNow);
