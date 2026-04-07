@@ -3,7 +3,7 @@
 # Aspire readme
 ## Requirements
 - dotnet cli
-- nodejs
+- nodejs 22
 
 ## How to run  
 - `dotnet run AspireProj.AppHost/AspireProj.AppHost.csproj`
@@ -23,7 +23,7 @@ or F5 in Visual Studio/Rider
 ## How to run  
 - Create and seed the databases
 - F5 App1 and/or App2
-- npm run dev App1.Frontend or App2.Frontend
+- npm run dev App1.Frontend and/or App2.Frontend
 
 Ensure ports are setup correctly.
 Ensure connection strings are correct across apps.

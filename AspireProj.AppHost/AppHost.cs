@@ -12,7 +12,6 @@ var sql = builder.AddSqlServer("sql")
 
 var app1db = sql.AddDatabase("app1db");
 
-
 var pg = builder.AddPostgres("pg").WithPgAdmin();  // admin management, nothing persisted
 var app2db = pg.AddDatabase("app2db");
 
@@ -23,8 +22,9 @@ var seq = builder.AddSeq();
 // This is a common scenario for auth or caching or connection strings
 var sharedKey = builder.AddParameterFromConfiguration(AspireConstants.SharedConfig, AspireConstants.SharedConfigSomeKey, true);
 
-var app1 = builder.AddProject<Projects.App1>("app1")
+var app1 = builder.AddProject<Projects.App1_Web>("app1")
     .WithReference(app1db) // Injects connection string for App1Db
+    .WaitFor(app1db)
     .WithSeq() // Use seq
     .WithEnvironment(AspireConstants.SharedConfigSomeKey, sharedKey) // Inject parameter, bit clunky :(
     .WithExplicitStart() // Don't start on startup, so I can start what I want
@@ -38,10 +38,11 @@ var app1 = builder.AddProject<Projects.App1>("app1")
         IsHighlighted = true,
         IconName = "ArrowSyncCircle",
         IconVariant = IconVariant.Filled
-    });
+    }, true);
 
-var app2 = builder.AddProject<Projects.App2>("app2")
+var app2 = builder.AddProject<Projects.App2_Web>("app2")
     .WithReference(app2db)
+    .WaitFor(app2db)
     .WithSeq()
     .WithEnvironment(AspireConstants.SharedConfigSomeKey, sharedKey)
     .WithExplicitStart()
@@ -53,16 +54,16 @@ var app2 = builder.AddProject<Projects.App2>("app2")
         IsHighlighted = true,
         IconName = "ArrowSyncCircle",
         IconVariant = IconVariant.Filled
-    }); ;
+    }, true);
 
-builder.AddJavaScriptApp("app1-frontend", "../App1.Frontend", "watch")  // Run the watch command. I don't want the dev server, serve through aspnetcore.
+builder.AddJavaScriptApp("app1-frontend", "../App1/App1.Frontend", "watch")  // Run the watch command. I don't want the dev server, serve through aspnetcore.
     .WithNpm(true) // do install first
     .WithReference(app1)
     .WaitFor(app1)
     .WithParentRelationship(app1) // make child of the app itself in the UI. Just makes it tidier
     .WithHttpEndpoint(env: "PORT"); // Not really used here, but kept as this is how we run the dev server on the right port for aspire to be aware of.
 
-builder.AddJavaScriptApp("app2-frontend", "../App2.Frontend", "watch")
+builder.AddJavaScriptApp("app2-frontend", "../App2/App2.Frontend", "watch")
     .WithNpm(true)
     .WithReference(app2)
     .WaitFor(app2)

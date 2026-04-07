@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Humanizer.Localisation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ModelContextProtocol.Protocol;
 
 namespace AspireProj.AppHost;
 
@@ -31,35 +33,38 @@ public static class BuilderExtensions
         return seq;
     }
 
-    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProject<T>(this IResourceBuilder<T> builder, IResourceBuilder<IResource> resource, string commandName, CommandOptions commandOptions = null) where T : IResource
+    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProject<T>(this IResourceBuilder<T> builder, IResourceBuilder<IResource> resource, string commandName, CommandOptions commandOptions, bool waitForExecutions) where T : IResource
     {
-        return builder.WithCustomCommandToExecuteDifferentProjects([resource], commandName, commandOptions);
+        return builder.WithCustomCommandToExecuteDifferentProjects([resource], commandName, commandOptions, waitForExecutions);
     }
 
-    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProject<T>(this IResourceBuilder<T> builder, string resourceName, string commandName, CommandOptions commandOptions = null) where T : IResource
+    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProject<T>(this IResourceBuilder<T> builder, string resourceName, string commandName, CommandOptions commandOptions, bool waitForExecutions) where T : IResource
     {
         var resource = builder.GetResouceBuilder(resourceName);
-        return builder.WithCustomCommandToExecuteDifferentProjects([resource], commandName, commandOptions);
+        return builder.WithCustomCommandToExecuteDifferentProjects([resource], commandName, commandOptions, waitForExecutions);
     }
 
-    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProjects<T>(this IResourceBuilder<T> builder, string[] resourceNames, string commandName, CommandOptions? commandOptions = null) where T : ProjectResource
+    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProjects<T>(this IResourceBuilder<T> builder, string[] resourceNames, string commandName, CommandOptions? commandOptions, bool waitForExecutions) where T : ProjectResource
     {
         var resources = resourceNames.Select(r => builder.GetResouceBuilderForProject(r));
-        return builder.WithCustomCommandToExecuteDifferentProjects([.. resources], commandName, commandOptions);
+        return builder.WithCustomCommandToExecuteDifferentProjects([.. resources], commandName, commandOptions, waitForExecutions);
     }
 
-    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProjects<T>(this IResourceBuilder<T> builder, IEnumerable<IResourceBuilder<IResource>> resources, string commandName, CommandOptions? commandOptions = null) where T : IResource
+    public static IResourceBuilder<T> WithCustomCommandToExecuteDifferentProjects<T>(this IResourceBuilder<T> builder, IEnumerable<IResourceBuilder<IResource>> resources, string commandName, CommandOptions? commandOptions, bool waitForExecutions) where T : IResource
     {
         return builder.WithCommand(commandName, commandName, async execute =>
         {
             var commandService = execute.ServiceProvider.GetRequiredService<ResourceCommandService>();
 
             List<ExecuteCommandResult> results = [];
-            foreach (var resource in resources)
-            {
-                var result = await commandService.ExecuteCommandAsync(resource.Resource, KnownResourceCommands.StartCommand);
-                results.Add(result);
-            }
+            if (waitForExecutions) 
+                results = await BuildWaitChain(commandService, resources);
+            else
+                foreach (var resource in resources)
+                {
+                    var result = await commandService.ExecuteCommandAsync(resource.Resource, KnownResourceCommands.StartCommand);
+                    results.Add(result);
+                }
 
             var errors = results.Where(x => !x.Success).ToArray();
 
@@ -73,6 +78,27 @@ public static class BuilderExtensions
             IconName = "Play",
             IconVariant = IconVariant.Regular
         });
+    }
+
+    private static async Task<List<ExecuteCommandResult>> BuildWaitChain(ResourceCommandService commandService, IEnumerable<IResourceBuilder<IResource>> resources)
+    {
+        List<ExecuteCommandResult> results = [];
+        var resourcesArr = resources.ToArray();
+        var currentResource = resourcesArr[0];
+        var result = await commandService.ExecuteCommandAsync(currentResource.Resource, KnownResourceCommands.StartCommand);
+        results.Add(result);
+
+        for (var i = 1; i < resourcesArr.Length; i++)
+        {
+            var nextResource = resourcesArr[i];
+            currentResource.OnResourceStopped(async (r, e, c) =>
+            {
+                var result = await commandService.ExecuteCommandAsync(nextResource.Resource, KnownResourceCommands.StartCommand);
+                results.Add(result);
+            });
+            currentResource = nextResource;
+        }
+        return results;
     }
 
     public static IResourceBuilder<ProjectResource> WithDbUp<X>(this IResourceBuilder<ProjectResource> builder) where X : IProjectMetadata, new()
@@ -134,7 +160,7 @@ public static class BuilderExtensions
             .WithExplicitStart()
             .WithIconName(iconName)
             .WithDescription(description)
-            .WithCustomCommandToExecuteDifferentProjects(resources, "Start")
+            .WithCustomCommandToExecuteDifferentProjects(resources, "Start", null, false)
             .WithParentRelationship(parent);
     }
 }

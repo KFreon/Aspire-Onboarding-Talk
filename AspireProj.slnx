@@ -1,14 +1,20 @@
 <Solution>
-  <Project Path="App1/App1.csproj" />
-  <Project Path="App1DbUp/App1DbUp.csproj" />
-  <Project Path="App1Seed/App1Seed.csproj" />
-
-  <Project Path="App2/App2.csproj" />
-  <Project Path="App2DbUp/App2DbUp.csproj" />
-  <Project Path="App2Seed/App2Seed.csproj" />
+  <Folder Name="/App1/">
+    <Project Path="App1/App1/App1.Web.csproj" />
+    <Project Path="App1/App1DbUp/App1DbUp.csproj" />
+    <Project Path="App1/App1Seed/App1Seed.csproj" />
+  </Folder>
+  <Folder Name="/App2/">
+    <Project Path="App2/App2/App2.Web.csproj" />
+    <Project Path="App2/App2DbUp/App2DbUp.csproj" />
+    <Project Path="App2/App2Seed/App2Seed.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="ResetTheWorld.ps1" />
+  </Folder>
   <Project Path="AspireProj.AppHost/AspireProj.AppHost.csproj" Id="66383164-68d3-45aa-a832-a59155f32925" />
   <Project Path="AspireProj.ServiceDefaults/AspireProj.ServiceDefaults.csproj" />
-
   <Project Path="Shared/Shared.csproj" />
   <Project Path="SomeFunctions/SomeFunctions.csproj" Id="f5860bc7-3931-441a-aa4f-3a6cd221578b" />
   

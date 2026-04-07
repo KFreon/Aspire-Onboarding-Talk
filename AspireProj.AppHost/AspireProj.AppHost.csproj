@@ -19,12 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\App1DbUp\App1DbUp.csproj" />
-    <ProjectReference Include="..\App1Seed\App1Seed.csproj" />
-    <ProjectReference Include="..\App1\App1.csproj" />
-    <ProjectReference Include="..\App2DbUp\App2DbUp.csproj" />
-    <ProjectReference Include="..\App2Seed\App2Seed.csproj" />
-    <ProjectReference Include="..\App2\App2.csproj" />
+    <ProjectReference Include="..\App1\App1DbUp\App1DbUp.csproj" />
+    <ProjectReference Include="..\App1\App1Seed\App1Seed.csproj" />
+    <ProjectReference Include="..\App1\App1\App1.Web.csproj" />
+    <ProjectReference Include="..\App2\App2DbUp\App2DbUp.csproj" />
+    <ProjectReference Include="..\App2\App2Seed\App2Seed.csproj" />
+    <ProjectReference Include="..\App2\App2\App2.Web.csproj" />
     <ProjectReference Include="..\SomeFunctions\SomeFunctions.csproj" />
   </ItemGroup>
 
