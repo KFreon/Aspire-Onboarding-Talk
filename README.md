@@ -1,7 +1,8 @@
 # Aspire Onboarding and Documentation Talk
 
 # Aspire readme
-## Requirements
+## Requirements  
+- Docker
 - dotnet cli
 - nodejs 22
 
@@ -10,20 +11,27 @@
 or F5 in Visual Studio/Rider
 - Use buttons to create/seed db and run apps
 
+
+-----------------------------------------------------------------------------
+
+
 # Non-Aspire readme
 ## Requirements  
+- Docker (note if you have podman, and you have it aliased, you might need to adjust the ResetTheWorld.ps1 to use docker instead of podman)
 - dotnet cli
 - nodejs
+
+### If not using docker  
 - Sql server
-- Postgres
+- Postgres 
 - Seq
 - SSMS (or dbgate)
 - pgadmin
 
+## Setup
+- DbUp projects create database (add --dropdb to drop an existing db)  
+- Seed projects create data in databases  
+
 ## How to run  
-- Create and seed the databases
 - F5 App1 and/or App2
 - npm run dev App1.Frontend and/or App2.Frontend
-
-Ensure ports are setup correctly.
-Ensure connection strings are correct across apps.

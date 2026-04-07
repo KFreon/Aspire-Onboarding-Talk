@@ -1,0 +1,36 @@
+# Use postgres/example user/password credentials
+
+services:
+
+  postgres:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_USER: app2
+      POSTGRES_PASSWORD: app2
+      POSTGRES_DB: app2db
+    ports:
+      - 5435:5432  # Host:Container
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  sql:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    restart: always
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: MySuperSecurePassword1.
+    ports:
+      - 1435:1433

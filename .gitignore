@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 **/wwwroot
 **/tsconfig.tsbuildinfo
+App1/App1/wwwroot
