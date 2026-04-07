@@ -46,8 +46,8 @@ var app2 = builder.AddProject<Projects.App2_Web>("app2")
     .WithSeq()
     .WithEnvironment(AspireConstants.SharedConfigSomeKey, sharedKey)
     .WithExplicitStart()
-    .WithDbUp<Projects.App1DbUp>()
-    .WithSeed<Projects.App1Seed>()
+    .WithDbUp<Projects.App2DbUp>()
+    .WithSeed<Projects.App2Seed>()
     .WithExternalHttpEndpoints()
     .WithCustomCommandToExecuteDifferentProjects(["app2dbup", "app2seed"], "DbUp and seed DB", new CommandOptions
     {

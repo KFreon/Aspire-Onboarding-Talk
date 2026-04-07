@@ -12,15 +12,27 @@ public static class InfrastructureExtensions
     {
         app.MapFallback(async context =>
         {
-            var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
-            var path = Path.Combine(env.WebRootPath, "index.html");
-            var text = File.ReadAllText(path);
-            var config = context.RequestServices.GetRequiredService<IConfiguration>();
-            var secret = config.GetValue<string>("SharedConfig:SomeKey");  // This is lazy, should extract key to variable
-            text = text.Replace("THESECRET", secret);
+            while (true)
+            {
+                try
+                {
+                    var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+                    var path = Path.Combine(env.WebRootPath, "index.html");
+                    var text = File.ReadAllText(path);
+                    var config = context.RequestServices.GetRequiredService<IConfiguration>();
+                    var secret = config.GetValue<string>("SharedConfig:SomeKey");  // This is lazy, should extract key to variable
+                    text = text.Replace("THESECRET", secret);
 
-            context.Response.ContentType = "text/html";
-            await context.Response.WriteAsync(text);
+                    context.Response.ContentType = "text/html";
+                    await context.Response.WriteAsync(text);
+                    return;
+                }
+                catch (FileNotFoundException)
+                {
+                    // Likely just waiting for UI to finish building
+                    await Task.Delay(500);
+                } 
+            }
         });
     }
 }

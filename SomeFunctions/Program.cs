@@ -9,9 +9,10 @@ builder.AddServiceDefaults();
 
 builder.ConfigureFunctionsWebApplication();
 
-builder.Services
-    .AddApplicationInsightsTelemetryWorkerService()
-    .ConfigureFunctionsApplicationInsights();
+// There's something weird with App Insights and workers right now :(
+//builder.Services
+//    .AddApplicationInsightsTelemetryWorkerService()
+//    .ConfigureFunctionsApplicationInsights();
 
 builder.Services.AddHttpClient("app1", client =>
 {
